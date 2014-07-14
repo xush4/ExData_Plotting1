@@ -1,24 +1,28 @@
-energy<-read.table("./household_power_consumption.txt",header=T,sep=";")
-energyFeb1<-energy[energy$Date=="1/2/2007",]
-energyFeb2<-energy[energy$Date=="2/2/2007",]
-energy2Days<-rbind(energyFeb1,energyFeb2)
-energy2Days<-energy2Days[complete.cases(energy2Days),]
-require(stats)
-date<-as.Date(energy2Days$Date,format="%d/%m/%y")
-time<-as.vector(energy2Days$Time)
-x <- paste(date,time,sep=" ")
-dateadjusted<-strptime(x,format="%w %H:%M:%S")
-energy2Days<-data.frame(energy2Days,dateadjusted)
-png(file = "plot4.png")
-par(mfrow = c(2, 2))
-hist(a,col="red",main ="Global Active Power",xlab = "Global Active Power (Kilowatts)")
-with(energy2Days,plot(energy2Days[,4],energy2Days[,10],col="white",xlab="",ylab="Global Active Power (Kilowatts)")
-     lines(energy2Days[,4], energy2Days[,10],xlab="",ylab="Global Active Power (Kilowatts)",col="black")
-with(energy2Days,plot(energy2Days[,7],energy2Days[,10],col="white",xlab="",ylab="Energysub metering")
-     line(energy2Days[,7],energy2Days[,10],col="black")
-     line(energy2Days[,8],energy2Days[,10],col="blue")
-     line(energy2Days[,9],energy2Days[,10],col="red")      
-with(energy2Days,plot(energy2Days[,5],energy2Days[,10],col="white",xlab="",ylab="Global Active Power (Kilowatts)")
-     lines(energy2Days[,5], energy2Days[,10],xlab="",ylab="Global Active Power (Kilowatts)",col="black")  
-dev.copy(png, file = "plot4.png")
+data <- read.csv("./Data/household_power_consumption.txt", header=T, sep=';', na.strings="?", 
+                 check.names=F, stringsAsFactors=F, comment.char="", quote='\"')
+data$Date <- as.Date(data$Date, format="%d/%m/%Y")
+
+## Subsetting the data
+data_sub <- subset(data, subset=(Date >= "2007-02-01" & Date <= "2007-02-02"))
+rm(data)
+
+## Converting dates
+datetime <- paste(as.Date(data_sub$Date), data_sub$Time)
+data$Datetime <- as.POSIXct(datetime)
+par(mfrow=c(2,2), mar=c(4,4,2,1), oma=c(0,0,2,0))
+with(data_sub, {
+        plot(Global_active_power~Datetime, type="l", 
+             ylab="Global Active Power (kilowatts)", xlab="")
+        plot(Voltage~Datetime, type="l", 
+             ylab="Voltage (volt)", xlab="")
+        plot(Sub_metering_1~Datetime, type="l", 
+             ylab="Global Active Power (kilowatts)", xlab="")
+             lines(Sub_metering_2~Datetime,col='Red')
+             lines(Sub_metering_3~Datetime,col='Blue')
+             legend("topright", col=c("black", "red", "blue"), lty=1, lwd=2, bty="n",
+             legend=c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"))
+        plot(Global_reactive_power~Datetime, type="l", 
+             ylab="Global Rective Power (kilowatts)",xlab="")
+})
+dev.copy(png, file="plot4.png", height=480, width=480)
 dev.off()

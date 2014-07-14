@@ -1,16 +1,14 @@
-energy<-read.table("./household_power_consumption.txt",header=T,sep=";")
-energyFeb1<-energy[energy$Date=="1/2/2007",]
-energyFeb2<-energy[energy$Date=="2/2/2007",]
-energy2Days<-rbind(energyFeb1,energyFeb2)
-energy2Days<-energy2Days[complete.cases(energy2Days),]
-require(stats)
-date<-as.Date(energy2Days$Date,format="%d/%m/%y")
-time<-as.vector(energy2Days$Time)
-x <- paste(date,time,sep=" ")
-dateadjusted<-strptime(x,format="%w %H:%M:%S")
-energy2Days<-data.frame(energy2Days,dateadjusted)
-png(file = "plot2.png")
-with(energy2Days,plot(energy2Days[,4],energy2Days[,10],col="white",xlab="",ylab="Global Active Power (Kilowatts)")
-lines(energy2Days[,4], energy2Days[,10],xlab="",ylab="Global Active Power (Kilowatts)",col="black")
-dev.copy(png, file = "plot2.png")
+data <- read.csv("./household_power_consumption.txt", header=T, sep=';', na.strings="?", 
+               check.names=F, stringsAsFactors=F, comment.char="", quote='\"')
+data$Date <- as.Date(data$Date, format="%d/%m/%Y")
+
+data_sub <- subset(data, subset=(Date >= "2007-02-01" & Date <= "2007-02-02"))
+rm(data)
+
+datetime <- paste(as.Date(data_sub$Date), data_sub$Time)
+data_sub$Datetime <- as.POSIXct(datetime,)
+
+plot(data_sub$Global_active_power~data_sub$Datetime, type="l",
+     ylab="Global Active Power (kilowatts)", xlab="")
+dev.copy(png, file="plot2.png", height=480, width=480)
 dev.off()

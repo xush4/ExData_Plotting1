@@ -1,18 +1,23 @@
-energy<-read.table("./household_power_consumption.txt",header=T,sep=";")
-energyFeb1<-energy[energy$Date=="1/2/2007",]
-energyFeb2<-energy[energy$Date=="2/2/2007",]
-energy2Days<-rbind(energyFeb1,energyFeb2)
-energy2Days<-energy2Days[complete.cases(energy2Days),]
-require(stats)
-date<-as.Date(energy2Days$Date,format="%d/%m/%y")
-time<-as.vector(energy2Days$Time)
-x <- paste(date,time,sep=" ")
-dateadjusted<-strptime(x,format="%w %H:%M:%S")
-energy2Days<-data.frame(energy2Days,dateadjusted)
-png(file = "plot3.png")
-with(energy2Days,plot(energy2Days[,7],energy2Days[,10],col="white",xlab="",ylab="Energysub metering")
-line(energy2Days[,7],energy2Days[,10],col="black")
-line(energy2Days[,8],energy2Days[,10],col="blue")
-line(energy2Days[,9],energy2Days[,10],col="red")      
-dev.copy(png, file = "plot3.png")
+data <- read.csv("./Data/household_power_consumption.txt", header=T, sep=';', na.strings="?", 
+                 check.names=F, stringsAsFactors=F, comment.char="", quote='\"')
+data$Date <- as.Date(data$Date, format="%d/%m/%Y")
+
+## Subsetting the data
+data_sub <- subset(data, subset=(Date >= "2007-02-01" & Date <= "2007-02-02"))
+rm(data)
+
+## Converting dates
+datetime <- paste(as.Date(data_sub$Date), data_sub$Time)
+data$Datetime <- as.POSIXct(datetime)
+
+with(data_sub, {
+        plot(Sub_metering_1~Datetime, type="l",
+             ylab="Global Active Power (kilowatts)", xlab="")
+        lines(Sub_metering_2~Datetime,col='Red')
+        lines(Sub_metering_3~Datetime,col='Blue')
+})
+legend("topright", col=c("black", "red", "blue"), lty=1, lwd=2, 
+       legend=c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"))
+
+dev.copy(png, file="plot3.png", height=480, width=480)
 dev.off()
