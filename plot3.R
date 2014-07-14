@@ -10,7 +10,7 @@ rm(data)
 datetime <- paste(as.Date(data_sub$Date), data_sub$Time)
 data$Datetime <- as.POSIXct(datetime)
 
-png(filename="plot2.png",width=480,height=480,units = "px")
+png(filename="plot3.png",width=480,height=480,units = "px")
 Sys.setlocale("LC_TIME", "English") ## x axis time values in english
 with(data_sub, {
         plot(Sub_metering_1~Datetime, type="l",
