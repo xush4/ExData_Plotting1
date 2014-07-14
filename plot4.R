@@ -10,6 +10,9 @@ rm(data)
 datetime <- paste(as.Date(data_sub$Date), data_sub$Time)
 data$Datetime <- as.POSIXct(datetime)
 par(mfrow=c(2,2), mar=c(4,4,2,1), oma=c(0,0,2,0))
+
+png(filename="plot2.png",width=480,height=480,units = "px")
+Sys.setlocale("LC_TIME", "English") ## x axis time values in english
 with(data_sub, {
         plot(Global_active_power~Datetime, type="l", 
              ylab="Global Active Power (kilowatts)", xlab="")
@@ -24,5 +27,4 @@ with(data_sub, {
         plot(Global_reactive_power~Datetime, type="l", 
              ylab="Global Rective Power (kilowatts)",xlab="")
 })
-dev.copy(png, file="plot4.png", height=480, width=480)
 dev.off()
