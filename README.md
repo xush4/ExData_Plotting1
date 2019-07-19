@@ -1,4 +1,4 @@
-## Homework done on July 12th
+## Quick Demonstration, July 12th
 ## Introduction
 
 This assignment uses data from
